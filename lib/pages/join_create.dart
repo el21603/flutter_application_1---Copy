@@ -2,7 +2,33 @@ import 'dart:math'; // For generating random numbers
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
-//import 'firebase_options.dart';
+import 'package:flutter_application_1/firebase_options.dart'; // Import this if you have generated it using FlutterFire CLI
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Join/Create Game',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const JoinCreate(),
+    );
+  }
+}
 
 class JoinCreate extends StatefulWidget {
   const JoinCreate({super.key});
