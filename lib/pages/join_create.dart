@@ -1,10 +1,8 @@
 import 'dart:math'; // For generating random numbers
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart'; // Add Firebase dependency
-import 'package:flutter_application_1/pages/setitup.dart'; // Adjust path as needed
-
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // This will be created later
+import 'package:firebase_database/firebase_database.dart';
+//import 'firebase_options.dart';
 
 class JoinCreate extends StatefulWidget {
   const JoinCreate({super.key});
@@ -27,11 +25,16 @@ class _JoinCreateState extends State<JoinCreate> {
 
   // Function to create a database entry with the generated code
   Future<void> createDatabaseEntry(String code) async {
-    final DatabaseReference ref = FirebaseDatabase.instance.ref('games/$code');
-    await ref.set({
-      'createdAt': DateTime.now().toIso8601String(),
-      'status': 'waiting', // Example initial status
-    });
+    try {
+      final DatabaseReference ref = FirebaseDatabase.instance.ref('games/$code');
+      await ref.set({
+        'createdAt': DateTime.now().toIso8601String(),
+        'status': 'waiting',
+      });
+      print('Game room $code created successfully!');
+    } catch (e) {
+      print('Failed to create game room: $e');
+    }
   }
 
   // Function to generate code, store it in a database, and navigate
@@ -58,7 +61,6 @@ class _JoinCreateState extends State<JoinCreate> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 60),
-                // Title Left Aligned
                 const Text(
                   'JOIN A GAME',
                   style: TextStyle(
@@ -69,7 +71,6 @@ class _JoinCreateState extends State<JoinCreate> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Subtitle Left Aligned
                 const Text(
                   'Insert room code:',
                   style: TextStyle(
@@ -80,7 +81,6 @@ class _JoinCreateState extends State<JoinCreate> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Input Field and Arrow Button
                 Row(
                   children: [
                     Expanded(
@@ -133,7 +133,6 @@ class _JoinCreateState extends State<JoinCreate> {
               ],
             ),
           ),
-          // Button Positioned Lower in the Stack
           Positioned(
             bottom: 80,
             left: 0,
@@ -151,7 +150,6 @@ class _JoinCreateState extends State<JoinCreate> {
   }
 }
 
-// Create Room Button Widget
 class CreateRoomButton extends StatelessWidget {
   const CreateRoomButton({super.key});
 
@@ -163,10 +161,9 @@ class CreateRoomButton extends StatelessWidget {
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
-          // Button Image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/button_image.png', // Path to your image
+              'assets/images/button_image.png',
               fit: BoxFit.cover,
             ),
           ),
@@ -190,7 +187,6 @@ class CreateRoomButton extends StatelessWidget {
   }
 }
 
-// SetUpNumsPage to show the generated code
 class SetUpNumsPage extends StatelessWidget {
   final String code;
 
