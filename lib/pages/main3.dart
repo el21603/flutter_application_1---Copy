@@ -9,8 +9,8 @@ void main() {
 class Main3 extends StatelessWidget {
   final int numberOfTeams; // Pass the number of teams dynamically
 
-  const Main3({super.key, required this.numberOfTeams});
-
+  const Main3({required this.numberOfTeams});
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

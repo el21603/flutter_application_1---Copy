@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "63385484402",
+    "project_id": "fire-3phasiko",
+    "storage_bucket": "fire-3phasiko.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63385484402:android:0bd8aaca23ae78766896eb",
+        "android_client_info": {
+          "package_name": "com.examp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZbM2C5VtL1I8B2mrDsH11g101HflLuHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63385484402:android:c1b93672af5f120e6896eb",
+        "android_client_info": {
+          "package_name": "com.example.flutterapplication1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZbM2C5VtL1I8B2mrDsH11g101HflLuHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
