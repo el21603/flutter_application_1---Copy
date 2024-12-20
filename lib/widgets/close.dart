@@ -17,7 +17,7 @@ class CloseButtonTopRight extends StatelessWidget {
         onTap: () {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const Join_create()),
+            MaterialPageRoute(builder: (context) => const JoinCreateD()),
           );
         },
         child: const Icon(
