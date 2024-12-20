@@ -83,4 +83,5 @@ class DefaultFirebaseOptions {
     authDomain: 'fire-3phasiko.firebaseapp.com',
     storageBucket: 'fire-3phasiko.firebasestorage.app',
   );
+
 }
