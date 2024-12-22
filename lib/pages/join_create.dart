@@ -1,20 +1,29 @@
+import 'dart:math'; // For generating random numbers
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/setitup.dart';
-import 'package:flutter_application_1/pages/rules.dart'; // Adjust path as needed
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_application_1/firebase_options.dart'; // Import this if you have generated it using FlutterFire CLI
 
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-   runApp(const JoinCreateD());
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(const MyApp());
 }
 
-class JoinCreateD extends StatelessWidget {
-  const JoinCreateD({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData.light().copyWith(
-        scaffoldBackgroundColor: const Color(0xFFFFF9F9),
+      title: 'Join/Create Game',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
       home: const JoinCreate(),
     );
@@ -31,17 +40,39 @@ class JoinCreate extends StatefulWidget {
 class _JoinCreateState extends State<JoinCreate> {
   final TextEditingController _codeController = TextEditingController();
 
-  void _goToPlayerInfo(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const PlayerInfoPage()),
+  // Function to generate a random 4-digit alphanumeric code
+  String generateRandomCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final random = Random();
+    return String.fromCharCodes(
+      Iterable.generate(4, (_) => chars.codeUnitAt(random.nextInt(chars.length))),
     );
   }
 
-  void _goToSetUpNums(BuildContext context) {
+  // Function to create a database entry with the generated code
+  Future<void> createDatabaseEntry(String code) async {
+    try {
+      final DatabaseReference ref = FirebaseDatabase.instance.ref('games/$code');
+      await ref.set({
+        'createdAt': DateTime.now().toIso8601String(),
+        'status': 'waiting',
+      });
+      print('Game room $code created successfully!');
+    } catch (e) {
+      print('Failed to create game room: $e');
+    }
+  }
+
+  // Function to generate code, store it in a database, and navigate
+  void _goToSetUpNums(BuildContext context) async {
+    final randomCode = generateRandomCode(); // Generate the random code
+    await createDatabaseEntry(randomCode); // Create database entry with the code
+
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const MyApp()),
+      MaterialPageRoute(
+        builder: (context) => SetUpNumsPage(code: randomCode), // Pass code to the next page
+      ),
     );
   }
 
@@ -56,7 +87,6 @@ class _JoinCreateState extends State<JoinCreate> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 60),
-                // Title Left Aligned
                 const Text(
                   'JOIN A GAME',
                   style: TextStyle(
@@ -66,8 +96,7 @@ class _JoinCreateState extends State<JoinCreate> {
                     color: Colors.black,
                   ),
                 ),
-                const Spacing(height: 20), // Space after title
-                // Subtitle Left Aligned
+                const SizedBox(height: 20),
                 const Text(
                   'Insert room code:',
                   style: TextStyle(
@@ -77,8 +106,7 @@ class _JoinCreateState extends State<JoinCreate> {
                     color: Colors.black,
                   ),
                 ),
-                const Spacing(height: 10), // Space after subtitle
-                // Input Field and Arrow Button
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
@@ -108,9 +136,9 @@ class _JoinCreateState extends State<JoinCreate> {
                         ),
                       ),
                     ),
-                    const Spacing(width: 10), // Space between input field and button
+                    const SizedBox(width: 10),
                     GestureDetector(
-                      onTap: () => _goToPlayerInfo(context),
+                      onTap: () {}, // Add functionality if needed
                       child: Container(
                         width: 40,
                         height: 40,
@@ -128,13 +156,11 @@ class _JoinCreateState extends State<JoinCreate> {
                     ),
                   ],
                 ),
-                const Spacing(height: 20), // Space between input and button
               ],
             ),
           ),
-          // Button Positioned Lower in the Stack
           Positioned(
-            bottom: 80, // Moves the button down (you can adjust the value here)
+            bottom: 80,
             left: 0,
             right: 0,
             child: Center(
@@ -144,42 +170,8 @@ class _JoinCreateState extends State<JoinCreate> {
               ),
             ),
           ),
-          // Back Arrow Positioned Bottom Left
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: GestureDetector(
-               onTap: () {
-                Navigator.pushReplacement(
-                   context,
-                   MaterialPageRoute(builder: (context) => const RulesPageApp()),
-                );
-              },
-              child: const Icon(
-                Icons.arrow_back,
-                color: Colors.black,
-                size: 36,
-              ),
-            ),
-          ),
         ],
       ),
-    );
-  }
-}
-
-// Spacing class to add custom height and width
-class Spacing extends StatelessWidget {
-  final double height;
-  final double width;
-
-  const Spacing({super.key, this.height = 0, this.width = 0});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
     );
   }
 }
@@ -190,30 +182,28 @@ class CreateRoomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 200, // Larger size for the button
-      height: 200, // Larger size for the button
+      width: 200,
+      height: 200,
       child: Stack(
-        alignment: Alignment.topCenter, // Align children to the top center
+        alignment: Alignment.topCenter,
         children: [
-          // Button Image
           Positioned.fill(
             child: Image.asset(
-              'assets/images/button_image.png', // Path to your image
-              fit: BoxFit.cover, // Make the image cover the entire container
+              'assets/images/button_image.png',
+              fit: BoxFit.cover,
             ),
           ),
-          // Text Positioned at Top Center
           const Positioned(
-            top: 55, // Adjust vertical position of the text
+            top: 55,
             child: Text(
               'CREATE\nROOM',
-              textAlign: TextAlign.center, // Center-align the text lines
+              textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.black, // Black text color
-                fontSize: 20, // Larger font size
-                fontWeight: FontWeight.bold, // Bold text
+                color: Colors.black,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
                 fontFamily: 'Rubik',
-                height: 1.2, // Adjust line spacing
+                height: 1.2,
               ),
             ),
           ),
@@ -223,34 +213,19 @@ class CreateRoomButton extends StatelessWidget {
   }
 }
 
-class PlayerInfoPage extends StatelessWidget {
-  const PlayerInfoPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Player Info')),
-      body: const Center(
-        child: Text(
-          'Player Info Page',
-          style: TextStyle(fontSize: 24),
-        ),
-      ),
-    );
-  }
-}
-
 class SetUpNumsPage extends StatelessWidget {
-  const SetUpNumsPage({super.key});
+  final String code;
+
+  const SetUpNumsPage({super.key, required this.code});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Set Up Numbers')),
-      body: const Center(
+      body: Center(
         child: Text(
-          'Set Up Numbers Page',
-          style: TextStyle(fontSize: 24),
+          'Room Code: $code',
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),
     );

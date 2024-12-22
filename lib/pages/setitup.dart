@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/close.dart';
+//import '../widgets/close.dart';
+import 'package:flutter_application_1/pages/main3.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -95,7 +96,14 @@ class MyApp extends StatelessWidget {
                     // NEXT Button
                     Center(
                       child: GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (contex) => const Main3(numberOfTeams: 3,),
+                            ), 
+                          );
+                        },
                         child: Container(
                           width: MediaQuery.of(context).size.width * 0.6,
                           height: 60,
