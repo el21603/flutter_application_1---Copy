@@ -1,7 +1,10 @@
+import 'package:firebase_core/firebase_core.dart'; // Import Firebase
 import 'package:flutter/material.dart';
 import 'pages/avatar_selection.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure bindings are initialized
+  await Firebase.initializeApp(); // Initialize Firebase
   runApp(const MyApp());
 }
 
