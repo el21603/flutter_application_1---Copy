@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_application_1/firebase_options.dart'; // Import this if you have generated it using FlutterFire CLI
+import 'avatar_selection.dart'; // Import your avatar page
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,7 @@ class JoinCreate extends StatefulWidget {
 
 class _JoinCreateState extends State<JoinCreate> {
   final TextEditingController _codeController = TextEditingController();
+  bool _isCodeValid = true; // Tracks if the entered code is valid
 
   // Function to generate a random 4-digit alphanumeric code
   String generateRandomCode() {
@@ -74,6 +76,41 @@ class _JoinCreateState extends State<JoinCreate> {
         builder: (context) => SetUpNumsPage(code: randomCode), // Pass code to the next page
       ),
     );
+  }
+
+  // Function to check if a code exists in the database
+  Future<bool> _checkCodeExists(String code) async {
+    try {
+      final DatabaseReference ref = FirebaseDatabase.instance.ref('games/$code');
+      final DataSnapshot snapshot = await ref.get();
+      return snapshot.exists;
+    } catch (e) {
+      print('Error checking code: $e');
+      return false;
+    }
+  }
+
+  // Function to handle joining the game
+  void _joinGame(BuildContext context) async {
+    final enteredCode = _codeController.text.trim().toUpperCase();
+
+    // Check if the entered code exists
+    final codeExists = await _checkCodeExists(enteredCode);
+
+    if (codeExists) {
+      // Navigate to the AvatarSelectionScreen if the code exists
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AvatarSelectionScreen(), // Replace with your avatar page widget
+        ),
+      );
+    } else {
+      // Change text field appearance if the code does not exist
+      setState(() {
+        _isCodeValid = false;
+      });
+    }
   }
 
   @override
@@ -114,7 +151,9 @@ class _JoinCreateState extends State<JoinCreate> {
                         height: 50,
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFED7D7D),
+                          color: _isCodeValid
+                              ? const Color(0xFFED7D7D)
+                              : Colors.red.shade900, // Change color if invalid
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: TextField(
@@ -133,12 +172,17 @@ class _JoinCreateState extends State<JoinCreate> {
                             fontSize: 16,
                             fontFamily: 'Rubik',
                           ),
+                          onChanged: (_) {
+                            setState(() {
+                              _isCodeValid = true; // Reset validity on text change
+                            });
+                          },
                         ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     GestureDetector(
-                      onTap: () {}, // Add functionality if needed
+                      onTap: () => _joinGame(context), // Join game functionality
                       child: Container(
                         width: 40,
                         height: 40,
