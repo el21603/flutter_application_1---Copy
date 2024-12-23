@@ -44,3 +44,7 @@ flutter:
  #   - assets/images/avatars
 
 
+dependencies:
+  firebase_core: ^latest_version
+  cloud_firestore: ^latest_version # For Firestore
+  firebase_database: ^latest_version # For Realtime Database
